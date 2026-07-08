@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: #f5e6d3;
+  color: #1e293b;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f5e6d3;
+}
+::-webkit-scrollbar-thumb {
+  background: #d68a5c;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b5653b;
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}

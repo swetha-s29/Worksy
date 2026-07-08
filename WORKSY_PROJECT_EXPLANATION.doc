@@ -1,0 +1,155 @@
+<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+<head>
+<meta charset="utf-8">
+<title>Worksy Project Explanation</title>
+<style>
+  body { font-family: 'Calibri', sans-serif; line-height: 1.6; }
+  h1 { font-size: 24pt; color: #b5653b; margin-bottom: 10px; }
+  h2 { font-size: 16pt; color: #2c3e50; border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 24px; }
+  h3 { font-size: 14pt; color: #34495e; margin-top: 16px; }
+  p, li { font-size: 11pt; margin-bottom: 8px; }
+  strong { font-weight: bold; }
+  ul, ol { margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<h1>Worksy: Project Explanation Document</h1>
+<p>This document is designed to help you understand and explain the Worksy project confidently to reviewers, faculty, or interviewers. It strictly reflects the actual codebase, components, and workflow currently implemented in the project.</p>
+
+<h2>1. Project Overview</h2>
+<p><strong>What Worksy is:</strong> Worksy is a localized, minimal service platform designed to connect people who need temporary help (Customers) with people looking for flexible, short-term work (Workers).</p>
+<p><strong>Problem Statement:</strong> Finding quick, reliable local help for small tasks (like plumbing, cleaning, or moving) is often complicated by large, complex platforms. Similarly, local workers struggle to find flexible, nearby opportunities without paying high platform fees.</p>
+<p><strong>Goal of the MVP:</strong> The Minimum Viable Product (MVP) focuses purely on the core workflow: allowing a Customer to post a gig and a Worker to apply for it. We intentionally avoided complex features like payments, live chat, or maps to ensure the core workflow remains stable, clean, and easily understandable for a beginner-level demonstration.</p>
+
+<h2>2. Tech Stack Explanation</h2>
+<ul>
+<li><strong>React:</strong> Used for building the frontend user interface. We chose React because its component-based architecture allows us to reuse UI elements (like the GigCard) and efficiently manage state.</li>
+<li><strong>Vite:</strong> Used as the build tool instead of Create React App. Vite is incredibly fast, providing instant server start and lightning-fast hot module replacement, making development smooth.</li>
+<li><strong>Tailwind CSS:</strong> Used for styling. Instead of writing separate CSS files, Tailwind allows us to style components directly using utility classes. This keeps our design consistent, minimal, and easy to maintain.</li>
+<li><strong>Node.js + Express:</strong> Used to build the backend REST API. Node.js allows us to use JavaScript on the server, keeping the language consistent across the stack. Express is a lightweight framework that makes routing and handling HTTP requests very simple.</li>
+<li><strong>MongoDB:</strong> Used as the NoSQL database to store our data. Its document-based structure (JSON-like objects) pairs perfectly with JavaScript and Node.js.</li>
+<li><strong>JWT (JSON Web Tokens):</strong> Used for authentication. It allows us to securely verify a user's identity statelessly, meaning the server doesn't need to keep track of active sessions in its memory.</li>
+</ul>
+
+<h2>3. Frontend Structure Explanation</h2>
+<p>Our frontend is structured for simplicity and readability:</p>
+<ul>
+<li><strong>/pages:</strong> Contains the main views of the application (Landing, Login, Register, Home, CustomerDashboard, WorkerDashboard, PostGig).</li>
+<li><strong>/components:</strong> Contains reusable UI pieces, specifically GigCard and ProtectedRoute.</li>
+<li><strong>/context:</strong> Holds the global state management. We use React Context (AuthContext and GigContext) instead of complex libraries like Redux to keep the project beginner-friendly.</li>
+</ul>
+<p><strong>Routing & Navigation:</strong><br>
+We use react-router-dom. The navigation flow is smart but simple:</p>
+<ol>
+<li>When a user visits the root URL (/), they see the Landing page.</li>
+<li>The Landing page has a left-aligned, spacious layout asking if they need a service or want to work.</li>
+<li>Clicking an option routes them to the Register page, passing their chosen role behind the scenes so the registration form automatically pre-selects "Customer" or "Worker".</li>
+<li>Once authenticated, they are navigated to /dashboard (which renders Home).</li>
+<li>Home dynamically renders either the CustomerDashboard or WorkerDashboard depending on the user's role.</li>
+</ol>
+
+<h2>4. Backend Structure Explanation</h2>
+<p>The backend follows the standard MVC (Model-View-Controller) pattern, adapted for APIs:</p>
+<ul>
+<li><strong>server.js:</strong> The entry point of our backend. It connects to MongoDB, sets up middleware (like CORS and JSON parsing), and defines the main API routes.</li>
+<li><strong>/routes:</strong> Contains authRoutes.js. This file defines the endpoints (e.g., /api/auth/login) and points them to the correct controller functions.</li>
+<li><strong>/controllers:</strong> Contains authController.js. This is where the actual business logic happens (e.g., checking if a user exists, validating passwords).</li>
+<li><strong>/models:</strong> Contains the MongoDB schemas (like User.js) defining how data is structured in the database.</li>
+<li><strong>/middleware:</strong> Contains authMiddleware.js, which intercepts requests to private routes, checks for a valid JWT token, and decodes the user's ID before allowing access.</li>
+</ul>
+
+<h2>5. Authentication Workflow</h2>
+<ol>
+<li><strong>Registration:</strong> The user submits their name, email, password, and role. The backend controller hashes the password using bcryptjs for security and saves the user to MongoDB. It then generates and returns a JWT token.</li>
+<li><strong>Login:</strong> The user submits their email and password. The backend finds the user, uses bcryptjs to compare the entered password with the hashed database password, and returns a JWT token if they match.</li>
+<li><strong>Protected Routes:</strong> For pages that require the user to be logged in (like /dashboard), the frontend uses a ProtectedRoute wrapper component. If no user is found in the AuthContext, it redirects them back to /login.</li>
+<li><strong>Demo Bypass (Current State):</strong> For demonstration purposes where a local database connection might fail, the frontend is currently configured to bypass the backend fetch calls. It instantly generates a mock user object and logs them in via AuthContext, ensuring the workflow can always be presented without database dependency.</li>
+</ol>
+
+<h2>6. Database Models</h2>
+<p><strong>User Model (backend/models/User.js)</strong></p>
+<ul>
+<li><strong>name:</strong> String (To display a personalized greeting on the dashboard)</li>
+<li><strong>email:</strong> String (Used as the unique identifier for logging in)</li>
+<li><strong>password:</strong> String (Stored as a hashed string for security)</li>
+<li><strong>role:</strong> String Enum (Customer or Worker) (Crucial for determining which dashboard the user sees)</li>
+<li><strong>availabilityStatus:</strong> Boolean (Allows workers to indicate if they are currently taking jobs)</li>
+</ul>
+
+<p><strong>Gig Model Data Structure (Managed via GigContext on Frontend for Demo)</strong></p>
+<ul>
+<li><strong>id:</strong> String (Unique identifier for the gig)</li>
+<li><strong>title:</strong> String (A short summary of the job)</li>
+<li><strong>description:</strong> String (Details about what needs to be done)</li>
+<li><strong>category:</strong> String (e.g., Plumbing, Cleaning)</li>
+<li><strong>location:</strong> String (Where the service is needed, e.g., Coimbatore)</li>
+<li><strong>payment:</strong> String (Kept as a simple string like "₹1500" or "Negotiable" to keep the MVP simple)</li>
+<li><strong>status:</strong> String Enum (Open, In Progress, Completed) (Tracks the lifecycle of the gig)</li>
+<li><strong>customerId:</strong> String (Links the gig to the user who posted it)</li>
+<li><strong>workerId:</strong> String (Links the gig to the worker who is hired; null initially)</li>
+<li><strong>applicants:</strong> Array of Strings (Stores the IDs of workers who clicked "Apply")</li>
+</ul>
+
+<h2>7. Customer Workflow</h2>
+<ol>
+<li><strong>Posting a Gig:</strong> The Customer clicks "+ Post New Gig" and fills out a simple form. This adds the gig to the global state with a status of Open.</li>
+<li><strong>Viewing Gigs:</strong> The CustomerDashboard filters the global list to only show gigs belonging to the logged-in Customer.</li>
+<li><strong>Accepting Workers:</strong> If a gig is Open and has applicants, a button appears on the GigCard allowing the customer to "Accept First Applicant". Clicking this sets the gig status to In Progress and assigns the workerId.</li>
+<li><strong>Marking Completion:</strong> Once the job is done, the Customer clicks "Mark Completed", changing the status to Completed.</li>
+</ol>
+
+<h2>8. Worker Workflow</h2>
+<ol>
+<li><strong>Browsing Gigs:</strong> The WorkerDashboard defaults to a "Browse Gigs" tab, which filters the global list to show only Open gigs that the worker hasn't applied to yet.</li>
+<li><strong>Applying:</strong> The worker clicks "Apply for Gig" on a GigCard. Their user ID is pushed into the gig's applicants array.</li>
+<li><strong>My Gigs:</strong> The worker can switch to the "My Gigs" tab to see gigs they have applied for or have been assigned to. If the Customer accepts them, the card dynamically updates to say "You are assigned to this gig!".</li>
+</ol>
+
+<h2>9. UI/UX Design Decisions</h2>
+<ul>
+<li><strong>Minimal UI:</strong> We avoided heavy graphics or complex dashboards to ensure the platform feels like a lightweight, practical tool rather than a complicated enterprise SaaS product.</li>
+<li><strong>Warm Orange Theme:</strong> We selected a soft, earthy orange/terracotta palette instead of standard corporate blues. This makes the platform feel welcoming, grounded, and focused on human connection (local services).</li>
+<li><strong>Left-Focused Landing Page:</strong> The landing page content is aligned to the left side with a spacious container. This creates a clean, modern visual balance that naturally guides the user's eye from the headline down to the selection cards.</li>
+<li><strong>No Flashy Elements:</strong> We intentionally avoided neon gradients, futuristic AI styling, or over-designed animations to keep the platform feeling realistic and trustworthy for local, real-world services.</li>
+</ul>
+
+<h2>10. API Flow</h2>
+<ol>
+<li><strong>Action Triggered:</strong> The user clicks a button (e.g., "Register").</li>
+<li><strong>Frontend Request:</strong> The React component makes an asynchronous HTTP request using the native fetch API.</li>
+<li><strong>Backend Route:</strong> The Express router receives the request and forwards it to the controller.</li>
+<li><strong>Controller Logic:</strong> The controller processes the data, talks to MongoDB via Mongoose, and generates a response (like a JWT token).</li>
+<li><strong>Frontend Update:</strong> React receives the JSON response, updates the Context state, and triggers a UI re-render (like redirecting to the dashboard).</li>
+</ol>
+<p><em>(Note: Currently, the fetch step is bypassed in favor of local Context state updates to ensure a flawless MVP demonstration.)</em></p>
+
+<h2>11. Important Features Implemented</h2>
+<ul>
+<li>Role-based routing (Customer vs. Worker).</li>
+<li>Intuitive "One-Click" role pre-selection from the landing page.</li>
+<li>Fully functional UI workflow for creating, applying for, and completing gigs.</li>
+<li>Secure, hashed password authentication backend setup.</li>
+<li>Clean, responsive UI built with modern Tailwind CSS.</li>
+<li>Global state management using native React Context.</li>
+</ul>
+
+<h2>12. Current Limitations (Version 1)</h2>
+<p>To keep the project beginner-friendly and stable, we intentionally excluded:</p>
+<ul>
+<li><strong>Payments:</strong> Handling real transactions requires complex external APIs (like Stripe).</li>
+<li><strong>Live Chat:</strong> Real-time messaging requires WebSockets, which adds significant backend complexity.</li>
+<li><strong>Maps Integration:</strong> Adding Google Maps for exact location tracking was skipped in favor of simple string inputs.</li>
+<li><strong>Notifications:</strong> Push notifications or email alerts were excluded to keep the environment self-contained.</li>
+</ul>
+
+<h2>13. Future Improvements</h2>
+<p>Realistic enhancements for the next version could include:</p>
+<ol>
+<li><strong>Search & Filtering:</strong> Allowing workers to search gigs by category or location.</li>
+<li><strong>Reviews & Ratings:</strong> Allowing customers to rate workers out of 5 stars after a gig is completed.</li>
+<li><strong>Image Uploads:</strong> Allowing customers to attach a photo of the task (e.g., a broken pipe) when posting a gig.</li>
+<li><strong>Profile Pages:</strong> A dedicated page where workers can write a bio and list their skills.</li>
+</ol>
+
+</body>
+</html>
