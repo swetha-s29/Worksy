@@ -3,7 +3,7 @@
 Worksy is a minimal, clean, and stable MERN stack application designed as a student-focused, local-service platform MVP. It connects people who need temporary local services (Customers) with student workers looking for flexible earning opportunities (Workers).
 
 The application is themed around a warm, earthy terracotta/peach aesthetic and is optimized for the local community of Coimbatore, Tamil Nadu, India.
-
+sweeee
 ---
 
 ## 🚀 Key Features
